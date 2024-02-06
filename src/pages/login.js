@@ -15,7 +15,7 @@ function Login() {
     const data = { username: username, password: password };
     axios.post("http://localhost:3001/auth/login", data).then((response) => {
       if (response.data.error) {
-        alert(response.data.error);
+        alert("Password or UserName is wrong. Please Check");
       } else {
         console.log(response.data);
         localStorage.setItem("accessToken", response.data);

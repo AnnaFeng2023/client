@@ -12,7 +12,9 @@ function SingleItem() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jobResponse = await axios.get(`http://localhost:3001/jobInfos/byId/${id}`);
+        const jobResponse = await axios.get(
+          `http://localhost:3001/jobInfos/byId/${id}`
+        );
         setJobInfo(jobResponse.data);
 
         const authResponse = await axios.get("http://localhost:3001/auth", {
@@ -35,41 +37,30 @@ function SingleItem() {
     fetchData();
   }, [id]);
 
-  const handleDelete = async () => {
-    try {
-      const confirmDelete = window.confirm("Are you sure you want to delete this job?");
-      if (!confirmDelete) {
-        // User canceled the deletion
-        return;
-      }
-  
-      console.log("Deleting jobInfo:", id);
-  
-      // Send a request to delete the jobInfo
-      const response = await axios.delete(`http://localhost:3001/jobInfos/byId/${id}`, {
-        headers: { accessToken: localStorage.getItem("accessToken") },
-      });
-  
-      console.log("Delete response:", response);
-  
-      // Check if deletion was successful
-      if (response.data.message) {
-        console.log("JobInfo deleted successfully");
-        // Redirect to the home page or another appropriate location
-        navigate("/");
-      } else {
-        console.log("Error deleting jobInfo:", response.data.error);
-      }
-    } catch (error) {
-      console.error("Error deleting data:", error);
-      // Handle error, show a user-friendly message or log it as needed
-    }
-  };
-
   const handleUpdate = () => {
     // Use the `navigate` function to redirect to the update page
-    navigate(`/jobInfos/byId/${id}/update`);
+    navigate(`/jobInfos/update/${id}`);
+  };
 
+  const handleDelete = async () => {
+    try {
+      console.log("Deleting jobInfo:", id);
+
+      // Send a request to delete the jobInfo
+      const response = await axios.delete(
+        `http://localhost:3001/jobInfos/byId/${id}`,
+        {
+          headers: { accessToken: localStorage.getItem("accessToken") },
+        }
+      );
+
+      console.log("Delete response:", response);
+
+      // Redirect to the home page or another appropriate location
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
   };
 
   const [jobApply, setJobApply] = useState({
@@ -101,7 +92,7 @@ function SingleItem() {
 
       // Send a request to submit the job application
       const response = await axios.post(
-        "http://localhost:3001/job/apply",
+        "http://localhost:3001/jobInfos/apply",
         applicationData,
         {
           headers: { accessToken: localStorage.getItem("accessToken") },
@@ -121,25 +112,37 @@ function SingleItem() {
       ) : (
         <div className="card">
           <form onSubmit={handleApply}>
-          <div className="inner">
-            <h1 className="title">{jobInfo.Title}</h1>
-          </div>
-          <div className="inner">
-            <p className="body">{jobInfo.Description}</p>
-            {/* Add other necessary info here */}
-            <p className="companyName"><strong>Company Name: </strong>{jobInfo.CompanyID}</p>
-            <p className="location"><strong>Location: </strong>{jobInfo.Location}</p>
-            <p className="requirements"><strong>Requirements: </strong>{jobInfo.Requirements}</p>
-            <p className="postedDate"><strong>Posted Date: </strong>{jobInfo.PostedDate}</p>
-            {/* Add more fields as needed */}
-          </div>
-          {authState && (
             <div className="inner">
-              <button type="submit">Apply Now</button>
-              <button onClick={handleUpdate}>Update</button>
-              <button onClick={handleDelete}>Delete</button>
+              <h1 className="title">{jobInfo.Title}</h1>
             </div>
-          )}
+            <div className="inner">
+              <p className="body">{jobInfo.Description}</p>
+              {/* Add other necessary info here */}
+              <p className="companyName">
+                <strong>Company Name: </strong>
+                {jobInfo.CompanyID}
+              </p>
+              <p className="location">
+                <strong>Location: </strong>
+                {jobInfo.Location}
+              </p>
+              <p className="requirements">
+                <strong>Requirements: </strong>
+                {jobInfo.Requirements}
+              </p>
+              <p className="postedDate">
+                <strong>Posted Date: </strong>
+                {jobInfo.PostedDate}
+              </p>
+              {/* Add more fields as needed */}
+            </div>
+            {authState && (
+              <div className="inner">
+                <button type="submit">Apply Now</button>
+                <button onClick={handleUpdate}> Update </button>
+                <button onClick={handleDelete}> Delete </button>
+              </div>
+            )}
           </form>
         </div>
       )}

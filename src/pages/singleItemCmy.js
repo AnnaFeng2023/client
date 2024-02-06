@@ -6,6 +6,7 @@ function SingleItemCmy() {
   let { id } = useParams();
   const [company, setCompany] = useState({});
   const [comments, setComments] = useState([]);
+  const [compID, setCompID] = useState("");
   const [newComment, setNewComment] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [authState, setAuthState] = useState(false);
@@ -18,29 +19,34 @@ function SingleItemCmy() {
 
   useEffect(() => {
     // Fetch company information
-    axios.get(`http://localhost:3001/companies/byId/${id}`)
+    axios
+      .get(`http://localhost:3001/companies/byId/${id}`)
       .then((response) => {
-        console.log("Company response:", response.data);  // Log the response
+        console.log("Company response:", response.data); // Log the response
         setCompany(response.data);
+        setCompID(response.data.companyID);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error fetching company information:", error);
       });
-  
+
     // Fetch comments information
-    axios.get(`http://localhost:3001/comments/${id}`)
+    axios
+      .get(`http://localhost:3001/comments/${id}`)
       .then((response) => {
-        console.log("Comments response:", response.data);  // Log the response
+        console.log("Comments response:", response.data); // Log the response
         setComments(response.data);
       })
       .catch((error) => {
         console.error("Error fetching comments:", error);
       });
-  
+
     // Fetch authentication status
-    axios.get("http://localhost:3001/auth", {
-      headers: { accessToken: localStorage.getItem("accessToken") },
-    })
+    axios
+      .get("http://localhost:3001/auth", {
+        headers: { accessToken: localStorage.getItem("accessToken") },
+      })
       .then((response) => {
         if (response.data.error) {
           setAuthState(false);
@@ -51,26 +57,20 @@ function SingleItemCmy() {
       .catch((error) => {
         console.error("Error fetching authentication status:", error);
       });
-
-
-
-      
   }, [id]);
-  
 
   const addComment = () => {
+    console.log("companyyyy", compID);
+    let commentData = {
+      CompanyID: compID,
+
+      Rating: selectedRating,
+      Comment: newComment,
+    };
     axios
-      .post(
-        "http://localhost:3001/comments",
-        {
-          CompanyID: company.CompanyID,
-          Rating: selectedRating,
-          Comment: newComment,
-        },
-        {
-          headers: { accessToken: localStorage.getItem("accessToken") },
-        }
-      )
+      .post("http://localhost:3001/comments", commentData, {
+        headers: { accessToken: localStorage.getItem("accessToken") },
+      })
       .then((response) => {
         if (response.data.error) {
           console.log(response.data.error);
@@ -84,9 +84,9 @@ function SingleItemCmy() {
   return (
     <div className="outer">
       <div className="card">
-      <div className="inner">
-        <h1 className="id">{company.companyName}</h1>
-      </div>
+        <div className="inner">
+          <h1 className="id">{company.companyName}</h1>
+        </div>
       </div>
       {authState && (
         <>
@@ -127,7 +127,7 @@ function SingleItemCmy() {
       {comments.map((value, key) => {
         return (
           <div className="commentcard">
-            <p>{value.Comment}</p>
+            <p>{value.comment}</p>
           </div>
         );
       })}

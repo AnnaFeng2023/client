@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AWS from "aws-sdk";
 import React from "react";
 
@@ -48,7 +48,7 @@ function Profile() {
       [e.target.name]: e.target.value,
     });
   };
-
+  let navi = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -62,6 +62,7 @@ function Profile() {
       );
 
       console.log("Profile updated successfully:", response.data);
+      navi("/");
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -79,17 +80,20 @@ function Profile() {
       });
 
       const { url } = s3response.data;
-      const Fileurl = url.split("?")[0];
+      alert(url);
+      //const Fileurl = url.split("?")[0];
       // Upload the file to S3 using pre-signed URL
       await axios.put(url, file, {
         headers: {
           "Content-Type": fileType,
         },
       });
+
       setUserData({
         ...userData,
         ResumeFilePath: url.split("?")[0], // Extract URL without query parameters
       });
+      alert(userData);
       alert("File uploaded successfully.");
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -100,6 +104,7 @@ function Profile() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFile(file);
+    console.log("isssss", file);
   };
 
   return (
@@ -166,16 +171,12 @@ function Profile() {
               onChange={handleInputChange}
             />
           </div>
-          <div>
-            <input type="file" onChange={handleFileChange} />
-            <button onClick={uploadFile}>Upload</button>
-          </div>
-          <div>
+          <div className="innerFile">
             <label>Resume File Path:</label>
+            <input type="file" onChange={handleFileChange} />
             <label>{userData.ResumeFilePath}</label>
-            <label>
-              <Link to="/add">Add Resume</Link>
-            </label>
+
+            <button onClick={uploadFile}>Upload</button>
           </div>
 
           <button type="submit">Update Profile</button>

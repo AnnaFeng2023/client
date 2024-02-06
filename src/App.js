@@ -63,9 +63,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/company" element={<Company />} />
+            
             <Route path="/companies/byId/:id" element={<SingleItemCmy />} />
             <Route path="/createJob" element={<CreateJob />} />
-            <Route path="/jobInfos/byId/:id/update" element={<Update />} />
+            <Route path="/jobInfos/update/:id" element={<Update />} />
             <Route path="/jobInfos/byId/:id/delete" element={<Delete />} />
             <Route path="/jobInfos/byId/:id" element={<SingleItem />} />
             <Route path="/login" element={<Login />} />
